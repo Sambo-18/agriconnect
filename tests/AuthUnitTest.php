@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+    @session_start();
+}
 /**
  * Test Unitaire - Fonctionnalité d'Authentification (AgriConnect)
  * 
@@ -134,4 +137,11 @@ class AuthUnitTest {
         echo "\nRésultat: {$this->succes} Succès, {$this->echecs} Échecs.\n";
         return $this->echecs === 0;
     }
+}
+
+// Permet l'exécution directe via : php tests/AuthUnitTest.php
+if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'] ?? '')) {
+    $tester = new AuthUnitTest();
+    $ok = $tester->runAllTests();
+    exit($ok ? 0 : 1);
 }

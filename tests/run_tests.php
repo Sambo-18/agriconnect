@@ -1,10 +1,4 @@
 <?php
-/**
- * Test Runner - Exécution Globale des Tests AgriConnect
- * 
- * Lancement: php tests/run_tests.php
- */
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -14,21 +8,30 @@ require_once __DIR__ . '/../includes/fonctions.php';
 require_once __DIR__ . '/AuthUnitTest.php';
 require_once __DIR__ . '/AuthIntegrationTest.php';
 
-echo "\n🚀 DEMARRAGE DES TESTS D'AUTHENTIFICATION AGRICONNECT 🇨🇲\n";
+$mode = strtolower($argv[1] ?? 'all');
+
+echo "\n🚀 DEMARRAGE DES TESTS AGRICONNECT 🇨🇲 (Mode: " . strtoupper($mode) . ")\n";
 echo "------------------------------------------------------------------\n";
 
-$unitTester = new AuthUnitTest();
-$unitOk = $unitTester->runAllTests();
+$unitOk = true;
+$integrationOk = true;
 
-$integrationTester = new AuthIntegrationTest();
-$integrationOk = $integrationTester->runAllTests();
+if ($mode === 'unit' || $mode === 'all') {
+    $unitTester = new AuthUnitTest();
+    $unitOk = $unitTester->runAllTests();
+}
+
+if ($mode === 'integration' || $mode === 'all') {
+    $integrationTester = new AuthIntegrationTest();
+    $integrationOk = $integrationTester->runAllTests();
+}
 
 echo "\n------------------------------------------------------------------\n";
 if ($unitOk && $integrationOk) {
-    echo "🎉 \033[32mTOUS LES TESTS (UNITAIRES ET INTÉGRATION) ONT RÉUSSI !\033[0m\n\n";
+    echo "🎉 \033[32mTESTS TERMINÉS AVEC SUCCÈS !\033[0m\n\n";
     exit(0);
 } else {
-    echo "⚠️ \033[31mCERTAINS TESTS ONT ÉCHOUÉ. VEUILLEZ VÉRIFIER LES LOGS CI-DESSUS.\033[0m\n\n";
+    echo "⚠️ \033[31mÉCHEC DE CERTAINS TESTS. VEUILLEZ VÉRIFIER LES ERREURS.\033[0m\n\n";
     exit(1);
 }
 

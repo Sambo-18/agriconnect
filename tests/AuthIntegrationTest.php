@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+    @session_start();
+}
 /**
  * Test d'Intégration - Authentification Complète (AgriConnect)
  * 
@@ -34,9 +37,9 @@ class AuthIntegrationTest {
         }
         $_SESSION = [];
 
-        // Inclure le fichier de connexion BDD réel
+        global $pdo;
         require_once __DIR__ . '/../config/connexion_db.php';
-        $this->pdo = $GLOBALS['pdo'] ?? null;
+        $this->pdo = $GLOBALS['pdo'] ?? $pdo ?? null;
     }
 
     /**
@@ -176,4 +179,11 @@ class AuthIntegrationTest {
         echo "\nRésultat: {$this->succes} Succès, {$this->echecs} Échecs.\n";
         return $this->echecs === 0;
     }
+}
+
+// Permet l'exécution directe via : php tests/AuthIntegrationTest.php
+if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'] ?? '')) {
+    $tester = new AuthIntegrationTest();
+    $ok = $tester->runAllTests();
+    exit($ok ? 0 : 1);
 }
